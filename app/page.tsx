@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Subscription = {
   id: number;
@@ -22,6 +22,25 @@ const categories = [
 export default function HomePage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const savedSubscriptions = localStorage.getItem("subscriptions");
+
+    if (savedSubscriptions) {
+      setSubscriptions(JSON.parse(savedSubscriptions));
+    }
+
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) {
+      return;
+    }
+
+    localStorage.setItem("subscriptions", JSON.stringify(subscriptions));
+  }, [subscriptions, isMounted]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -81,6 +100,10 @@ export default function HomePage() {
       : subscriptions.filter(
           (subscription) => subscription.category === selectedCategory,
         );
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-stone-100 text-neutral-900">
