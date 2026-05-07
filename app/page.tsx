@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip } from "recharts";
 
 type Subscription = {
   id: number;
@@ -91,6 +92,23 @@ export default function HomePage() {
 
     return total + subscription.price * 12;
   }, 0);
+
+  const chartData = categories.map((category) => {
+    const total = subscriptions
+      .filter((subscription) => subscription.category === category)
+      .reduce((sum, subscription) => {
+        if (subscription.billingCycle === "Yearly") {
+          return sum + subscription.price / 12;
+        }
+
+        return sum + subscription.price;
+      }, 0);
+
+    return {
+      category,
+      total,
+    };
+  });
 
   const activeSubscriptions = subscriptions.length;
 
@@ -305,6 +323,38 @@ export default function HomePage() {
             </div>
           )}
         </section>
+
+        {subscriptions.length === 0 ? (
+          <div className="border border-dashed border-neutral-300 p-20 text-center">
+            <p className="text-neutral-500">
+              Add subscriptions to display chart data.
+            </p>
+          </div>
+        ) : (
+          <section className="mt-24">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-light">Spending Overview</h2>
+            </div>
+
+            <div className="mt-10 border border-neutral-300 bg-white p-8">
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <XAxis
+                      dataKey="category"
+                      tickLine={false}
+                      axisLine={false}
+                    />
+
+                    <Tooltip />
+
+                    <Bar dataKey="total" fill="#171717" radius={[0, 0, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
