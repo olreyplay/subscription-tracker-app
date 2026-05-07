@@ -9,6 +9,15 @@ type Subscription = {
   billingCycle: string;
 };
 
+const categories = [
+  "Entertainment",
+  "Music",
+  "Software",
+  "Fitness",
+  "Utilities",
+  "Education",
+];
+
 export default function HomePage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
@@ -141,10 +150,9 @@ export default function HomePage() {
                     name="category"
                     className="mt-3 w-full border border-neutral-300 px-4 py-3 outline-none transition focus:border-neutral-900"
                   >
-                    <option>Entertainment</option>
-                    <option>Music</option>
-                    <option>Software</option>
-                    <option>Fitness</option>
+                    {categories.map((category) => (
+                      <option key={category}>{category}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -194,9 +202,9 @@ export default function HomePage() {
                 >
                   <div className="flex items-start justify-between gap-6">
                     <div>
-                      <p className="text-sm uppercase tracking-[0.2em] text-neutral-400">
+                      <div className="inline-flex border border-neutral-300 px-3 py-1 text-xs uppercase tracking-[0.2em] text-neutral-500">
                         {subscription.category}
-                      </p>
+                      </div>
 
                       <h3 className="mt-4 text-3xl font-light">
                         {subscription.name}
