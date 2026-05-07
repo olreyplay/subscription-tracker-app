@@ -30,6 +30,24 @@ export default function HomePage() {
     event.currentTarget.reset();
   }
 
+  const monthlyCost = subscriptions.reduce((total, subscription) => {
+    if (subscription.billingCycle === "Yearly") {
+      return total + subscription.price / 12;
+    }
+
+    return total + subscription.price;
+  }, 0);
+
+  const yearlyCost = subscriptions.reduce((total, subscription) => {
+    if (subscription.billingCycle === "Yearly") {
+      return total + subscription.price;
+    }
+
+    return total + subscription.price * 12;
+  }, 0);
+
+  const activeSubscriptions = subscriptions.length;
+
   return (
     <main className="min-h-screen bg-stone-100 text-neutral-900">
       <div className="mx-auto max-w-7xl px-6 py-10">
@@ -56,7 +74,9 @@ export default function HomePage() {
               Monthly Cost
             </p>
 
-            <h3 className="mt-6 text-5xl font-light">$0</h3>
+            <h3 className="mt-6 text-5xl font-light">
+              ${monthlyCost.toFixed(2)}
+            </h3>
           </div>
 
           <div className="border border-neutral-300 bg-white p-8">
@@ -64,7 +84,9 @@ export default function HomePage() {
               Yearly Cost
             </p>
 
-            <h3 className="mt-6 text-5xl font-light">$0</h3>
+            <h3 className="mt-6 text-5xl font-light">
+              ${yearlyCost.toFixed(2)}
+            </h3>
           </div>
 
           <div className="border border-neutral-300 bg-white p-8">
@@ -72,7 +94,7 @@ export default function HomePage() {
               Active Plans
             </p>
 
-            <h3 className="mt-6 text-5xl font-light">0</h3>
+            <h3 className="mt-6 text-5xl font-light">{activeSubscriptions}</h3>
           </div>
         </section>
 
