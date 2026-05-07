@@ -20,6 +20,7 @@ const categories = [
 
 export default function HomePage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,6 +57,13 @@ export default function HomePage() {
   }, 0);
 
   const activeSubscriptions = subscriptions.length;
+
+  const filteredSubscriptions =
+    selectedCategory === "All"
+      ? subscriptions
+      : subscriptions.filter(
+          (subscription) => subscription.category === selectedCategory,
+        );
 
   return (
     <main className="min-h-screen bg-stone-100 text-neutral-900">
@@ -182,12 +190,24 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-light">Your Subscriptions</h2>
 
-            <button className="border border-neutral-900 px-6 py-3 text-sm transition hover:bg-neutral-900 hover:text-white">
-              Add Subscription
-            </button>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {["All", ...categories].map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`border px-4 py-2 text-sm transition ${
+                    selectedCategory === category
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-300 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {subscriptions.length === 0 ? (
+          {filteredSubscriptions.length === 0 ? (
             <div className="mt-10 border border-dashed border-neutral-400 p-20 text-center">
               <p className="text-lg text-neutral-500">
                 No subscriptions added yet.
@@ -195,7 +215,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="mt-10 grid gap-6 md:grid-cols-2">
-              {subscriptions.map((subscription) => (
+              {filteredSubscriptions.map((subscription) => (
                 <article
                   key={subscription.id}
                   className="border border-neutral-300 bg-white p-8"
