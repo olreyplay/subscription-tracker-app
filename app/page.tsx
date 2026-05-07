@@ -7,6 +7,7 @@ type Subscription = {
   price: number;
   category: string;
   billingCycle: string;
+  status: "Active" | "Canceled";
 };
 
 const categories = [
@@ -33,11 +34,27 @@ export default function HomePage() {
       price: Number(formData.get("price")),
       category: formData.get("category") as string,
       billingCycle: formData.get("billingCycle") as string,
+      status: "Active",
     };
 
     setSubscriptions([...subscriptions, newSubscription]);
 
     event.currentTarget.reset();
+  }
+
+  function toggleSubscriptionStatus(id: number) {
+    setSubscriptions(
+      subscriptions.map((subscription) => {
+        if (subscription.id === id) {
+          return {
+            ...subscription,
+            status: subscription.status === "Active" ? "Canceled" : "Active",
+          };
+        }
+
+        return subscription;
+      }),
+    );
   }
 
   const monthlyCost = subscriptions.reduce((total, subscription) => {
@@ -218,12 +235,26 @@ export default function HomePage() {
               {filteredSubscriptions.map((subscription) => (
                 <article
                   key={subscription.id}
-                  className="border border-neutral-300 bg-white p-8"
+                  className={`border border-neutral-300 bg-white p-8 transition ${
+                    subscription.status === "Canceled"
+                      ? "opacity-50"
+                      : "opacity-100"
+                  }`}
                 >
                   <div className="flex items-start justify-between gap-6">
                     <div>
                       <div className="inline-flex border border-neutral-300 px-3 py-1 text-xs uppercase tracking-[0.2em] text-neutral-500">
                         {subscription.category}
+                      </div>
+
+                      <div
+                        className={`mt-3 inline-flex px-3 py-1 text-xs uppercase tracking-[0.2em] ${
+                          subscription.status === "Active"
+                            ? "bg-neutral-900 text-white"
+                            : "border border-neutral-300 text-neutral-400"
+                        }`}
+                      >
+                        {subscription.status}
                       </div>
 
                       <h3 className="mt-4 text-3xl font-light">
@@ -237,6 +268,15 @@ export default function HomePage() {
                   <p className="mt-8 text-sm text-neutral-500">
                     Billed {subscription.billingCycle.toLowerCase()}
                   </p>
+
+                  <button
+                    onClick={() => toggleSubscriptionStatus(subscription.id)}
+                    className="mt-8 border border-neutral-300 px-4 py-2 text-sm transition hover:border-neutral-900"
+                  >
+                    {subscription.status === "Active"
+                      ? "Cancel Subscription"
+                      : "Reactivate Subscription"}
+                  </button>
                 </article>
               ))}
             </div>
